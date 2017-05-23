@@ -28,9 +28,8 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
         JSONObject posterPathJSONObject = movies.getJSONObject(i);
         String posterPath = posterPathJSONObject.getString("poster_path");
 
-        Movies movieWithPath;
-        movieWithPath = null;
-        movieWithPath.setPosterPath(NetworkUtils.buildMoviePosterPath(posterPath).toString());
+        Movies movieWithPath = new Movies(posterPath);
+
         moviesArrayList.add(movieWithPath);
         //todo: test this
     }

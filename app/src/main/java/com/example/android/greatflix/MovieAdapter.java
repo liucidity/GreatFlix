@@ -7,13 +7,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
+
+import com.example.android.greatflix.objects.Movies;
+
+import java.util.List;
 
 /**
  * Created by TRAVIS on 2017-05-22.
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
-    private String[] mMovieData;
+    private List<Movies> mMovieData;
     private final MovieAdapterOnClickHandler mClickHandler;
 
 
@@ -38,7 +43,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            String imagePath = mMovieData[adapterPosition];
+            String imagePath = mMovieData.get(adapterPosition).getPosterPath();
             mClickHandler.onClick(imagePath);
         }
     }
@@ -57,7 +62,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
-        String MoviePosterPath = mMovieData[position];
+        String MoviePosterPath = mMovieData.get(position).getPosterPath();
         //todo: prob broken
         holder.mImageView.setImageURI(Uri.parse(MoviePosterPath));
     }
@@ -65,13 +70,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public int getItemCount() {
         if (null == mMovieData) return 0;
-        return mMovieData.length;
+        return mMovieData.size();
     }
 
 
-    public void setMovieData(String[] movieData) {
+    public void setMovieData(List<Movies> movieData) {
         mMovieData = movieData;
         notifyDataSetChanged();
 
     }
 }
+

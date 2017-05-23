@@ -37,7 +37,7 @@ TODO: load in background
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
-    public String CURRENT_QUERY;
+    private String CURRENT_QUERY;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     ArrayList<Movies> moviesList;
@@ -59,12 +59,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setAdapter(mMovieAdapter);
 
+        CURRENT_QUERY = POPULAR_QUERY;
         loadMovieData();
     }
 
-    public void setList(ArrayList<Movies> list) {
-        this.moviesList = list;
-    }
     private void loadMovieData(){
         URL movieurl = makeMovieSearchQuery();
 
@@ -83,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
-    public class MovieQueryTask extends AsyncTask<URL,Void, String>{
+    public class MovieQueryTask extends AsyncTask<URL,Void, List<Movies>>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -99,9 +97,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         protected List<Movies> doInBackground(URL... urls) {
 
             URL movieRequestUrl = makeMovieSearchQuery();
-            String QueryResults = null;
+
             try{
-                QueryResults = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
+                String QueryResults = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
                 List<Movies> jsonMovieData = JsonUtils.getMoviesFromResponse(QueryResults);
                 return jsonMovieData;
             }catch (Exception e){
@@ -112,7 +110,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
 
-        protected void onPostExecute(String[] s) {
+
+        protected void onPostExecute(List<Movies> s) {
             if(s!=null) {
                 mMovieAdapter.setMovieData(s);
             }
@@ -133,11 +132,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         if(id == R.id.action_choose_popular){
         CURRENT_QUERY = POPULAR_QUERY;
-            makeMovieSearchQuery();
+            loadMovieData();
         }
         if(id == R.id.action_choose_top_rated){
         CURRENT_QUERY = TOP_RATED_QUERY;
-            makeMovieSearchQuery();
+            loadMovieData();
         }
 
         return super.onOptionsItemSelected(item);
