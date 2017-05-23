@@ -9,10 +9,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import com.example.android.greatflix.objects.Movies;
 import com.example.android.greatflix.utilities.JsonUtils;
 import com.example.android.greatflix.utilities.NetworkUtils;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     ArrayList<Movies> moviesList;
+    private ImageView mImageView;
 
     private static final String POPULAR_QUERY =  "popular";
     private static final String TOP_RATED_QUERY = "top_rated";
@@ -51,11 +54,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
 
+        mImageView = (ImageView) findViewById(R.id.poster_imageview);
 
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GridLayoutManager.DEFAULT_SPAN_COUNT);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setAdapter(mMovieAdapter);
 
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         protected void onPostExecute(List<Movies> s) {
             if(s!=null) {
                 mMovieAdapter.setMovieData(s);
+
             }
         }
     }

@@ -3,6 +3,7 @@ package com.example.android.greatflix;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.android.greatflix.objects.Movies;
+import com.example.android.greatflix.utilities.NetworkUtils;
+import com.squareup.picasso.Picasso;
 
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -64,7 +68,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         String MoviePosterPath = mMovieData.get(position).getPosterPath();
         //todo: prob broken
-        holder.mImageView.setImageURI(Uri.parse(MoviePosterPath));
+        NetworkUtils.buildMoviePosterPath(MoviePosterPath);
+
+        Movies movies = new Movies(MoviePosterPath);
+        String imageUri = movies.toString();
+        ImageView ivBasicImage = holder.mImageView;
+        Picasso.with(ivBasicImage.getContext()).load(imageUri).into(ivBasicImage);
+        Log.d("Movieadapter", "onBindViewHolder: "+imageUri);
+
+
     }
 
     @Override

@@ -57,7 +57,7 @@ public final class NetworkUtils {
         }catch (MalformedURLException e){
             e.printStackTrace();
         }
-        Log.v(TAG, "Built URI " + url);
+        Log.v(TAG, "Built Poster URI " + url);
         return url;
 
     }
