@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.greatflix.DetailActivity">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/sample_image"
+        android:id="@+id/iv_detail"
+        android:layout_margin="16dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/iv_detail"
+        android:orientation="vertical">
+    <TextView
+        android:paddingTop="16dp"
+        android:id="@+id/tv_movie_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/iv_detail"
+        android:text="@string/movie_title"
+        android:textSize="22sp"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/release_date"
+        android:id="@+id/tv_release_date"
+
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_movie_title"
+        android:layout_toRightOf="@id/iv_detail"
+        android:text="@string/rating"
+        android:id="@+id/tv_ratings"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/overview"
+        android:id="@+id/tv_overview"
+        android:layout_toRightOf="@id/iv_detail"
+        android:layout_below="@id/tv_ratings"/>
+    </LinearLayout>
+</RelativeLayout>

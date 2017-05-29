@@ -22,12 +22,13 @@ import java.util.List;
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
+    private static final String TAG = MovieAdapter.class.getSimpleName();
     private List<Movies> mMovieData;
     private final MovieAdapterOnClickHandler mClickHandler;
 
 
     public interface MovieAdapterOnClickHandler{
-        void onClick(String currentMovie);
+        void onClick(String currentMovie, String titlePath, String releaseDatePath,String ratingPath, String overviewPath);
     }
 
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler){
@@ -48,7 +49,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             String imagePath = mMovieData.get(adapterPosition).getPosterPath();
-            mClickHandler.onClick(imagePath);
+            String titlePath = mMovieData.get(adapterPosition).getTitle();
+            String releaseDatePath = mMovieData.get(adapterPosition).getReleaseDate();
+            String ratingPath = mMovieData.get(adapterPosition).getRating();
+            String overviewPath = mMovieData.get(adapterPosition).getOverview();
+            mClickHandler.onClick(imagePath,titlePath,releaseDatePath, ratingPath, overviewPath);
         }
     }
 
@@ -67,14 +72,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         String MoviePosterPath = mMovieData.get(position).getPosterPath();
+        Log.d(TAG, "onBindViewHolder: "+MoviePosterPath);
         //todo: prob broken
-        NetworkUtils.buildMoviePosterPath(MoviePosterPath);
-
-        Movies movies = new Movies(MoviePosterPath);
-        String imageUri = movies.toString();
+        Uri uri = Uri.parse(NetworkUtils.buildMoviePosterPath(MoviePosterPath).toString());
         ImageView ivBasicImage = holder.mImageView;
-        Picasso.with(ivBasicImage.getContext()).load(imageUri).into(ivBasicImage);
-        Log.d("Movieadapter", "onBindViewHolder: "+imageUri);
+        Context context = ivBasicImage.getContext();
+        Picasso.with(context).load(uri).resize(342,514).centerInside().into(ivBasicImage);
 
 
     }

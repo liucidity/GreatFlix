@@ -23,18 +23,20 @@ public final class NetworkUtils {
     private static final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
 
 
-    //todo:maybe remove these
-    private static final String POPULAR_QUERY =  "popular";
-    private static final String TOP_RATED_QUERY = "top_rated";
     private static final String API_PARAM = "api_key";
+
+    //create your own api key for free at https://www.themoviedb.org
+    private static final String API_KEY = "";
     private static final String imageSize = "w185";
 
     //currently this buildUrl only works for popular movies todo: allow it to select between popular and top rate
+
+
     public static URL buildUrl(String QueryType){
 
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                 .appendPath(QueryType)
-                .appendQueryParameter(API_PARAM, "9fffce76b106323832408d9bae5a5e73")
+                .appendQueryParameter(API_PARAM, API_KEY)
                 .build();
 
         URL url = null;
@@ -49,7 +51,7 @@ public final class NetworkUtils {
     public static URL buildMoviePosterPath(String posterPath){
         Uri builtUri = Uri.parse(POSTER_BASE_URL).buildUpon()
                 .appendPath(imageSize)
-                .appendPath(posterPath)
+                .appendPath(posterPath.substring(1))
                 .build();
         URL url = null;
         try{

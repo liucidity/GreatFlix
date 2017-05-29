@@ -1,28 +1,37 @@
 package com.example.android.greatflix.objects;
 
+import static android.R.attr.id;
+
 /**
  * Created by TRAVIS on 2017-05-21.
  */
 
-public class Movies {
-    private int id;
-    private String posterPath;
-    private String title;
+public class Movies implements Cloneable{
 
-    public Movies(int id, String posterPath, String title) {
-        this.id = id;
+    private String posterPath;
+    private String releaseDate;
+    private String title;
+    private String rating;
+    private String overview;
+
+
+
+
+
+    public Movies(String posterPath, String title, String releaseDate, String rating, String overview) {
         this.posterPath = posterPath;
+        this.releaseDate = releaseDate;
         this.title = title;
+        this.rating = rating;
+        this.overview = overview;
     }
+
     public Movies(String posterPath) {
 
         this.posterPath = posterPath;
 
     }
 
-    public int getId() {
-        return id;
-    }
 
     public String getPosterPath() {
         return posterPath;
@@ -34,5 +43,17 @@ public class Movies {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public String getOverview() {
+        return overview;
     }
 }

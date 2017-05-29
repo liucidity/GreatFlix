@@ -1,5 +1,9 @@
 package com.example.android.greatflix;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,8 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.greatflix.objects.Movies;
 import com.example.android.greatflix.utilities.JsonUtils;
@@ -21,29 +28,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-/*TODO
-TODO: Image adapter
-TODO: picasso
-TODO: API call
-TODO: JSONutils
-TODO: networkutils
-TODO: Details Screen
-TODO: load in background
-
-//todo: change to recyclerview
-
-
-
-
- */
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private String CURRENT_QUERY;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
-    ArrayList<Movies> moviesList;
-    private ImageView mImageView;
+    private ProgressBar mProgressBar;
+    private TextView mInternetConnectivityTextView;
 
     private static final String POPULAR_QUERY =  "popular";
     private static final String TOP_RATED_QUERY = "top_rated";
@@ -54,23 +46,31 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
 
-        mImageView = (ImageView) findViewById(R.id.poster_imageview);
 
+        mInternetConnectivityTextView = (TextView) findViewById(R.id.tv_no_internet_connection);
+        mProgressBar = (ProgressBar) findViewById(R.id.pb_image_list);
         mMovieAdapter = new MovieAdapter(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setAdapter(mMovieAdapter);
 
         CURRENT_QUERY = POPULAR_QUERY;
-        loadMovieData();
+
+       loadMovieData();
     }
 
-    private void loadMovieData(){
-        URL movieurl = makeMovieSearchQuery();
+    private void loadMovieData() {
 
-        new MovieQueryTask().execute(movieurl);
+        if (!isNetworkAvailable()) {
+            mInternetConnectivityTextView.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.INVISIBLE);
+        } else {
+            mInternetConnectivityTextView.setVisibility(View.INVISIBLE);
+            URL movieurl = makeMovieSearchQuery();
+            new MovieQueryTask().execute(movieurl);
+        }
     }
     private URL makeMovieSearchQuery(){
         URL movieQueryUrl = NetworkUtils.buildUrl(CURRENT_QUERY);
@@ -80,8 +80,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
     @Override
-    public void onClick(String currentMovie) {
+    public void onClick(String currentMoviePoster, String currentMovieTitle, String currentMovieReleaseDate, String currentMovieRatings, String currentMovieOverview) {
+        Context context = this;
+
+
+        Class destinationClass = DetailActivity.class;
+        Intent startDetailActivityIntent = new Intent(context, destinationClass);
+        startDetailActivityIntent.putExtra("posterPath",currentMoviePoster);
+        startDetailActivityIntent.putExtra("movieTitle", currentMovieTitle);
+        startDetailActivityIntent.putExtra("movieReleaseDate", currentMovieReleaseDate);
+        startDetailActivityIntent.putExtra("movieRating", currentMovieRatings);
+        startDetailActivityIntent.putExtra("movieOverview", currentMovieOverview);
+        startActivity(startDetailActivityIntent);
 
     }
 
@@ -89,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            mProgressBar.setVisibility(View.VISIBLE);
+
         }
 
 
@@ -100,11 +120,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         protected List<Movies> doInBackground(URL... urls) {
 
+
             URL movieRequestUrl = makeMovieSearchQuery();
 
             try{
                 String QueryResults = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
-                List<Movies> jsonMovieData = JsonUtils.getMoviesFromResponse(QueryResults);
+                List<Movies> jsonMovieData = JsonUtils.getMoviesDetailsFromResponse(QueryResults);
                 return jsonMovieData;
             }catch (Exception e){
                 e.printStackTrace();
@@ -116,9 +137,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
         protected void onPostExecute(List<Movies> s) {
+            mProgressBar.setVisibility(View.INVISIBLE);
             if(s!=null) {
-                mMovieAdapter.setMovieData(s);
 
+                mMovieAdapter.setMovieData(s);
             }
         }
     }

@@ -2,5 +2,11 @@
     <string name="app_name">GreatFlix</string>
     <string name="popular">Popular</string>
     <string name="top_rated">Top Rated</string>
+    <string name="movie_title">Movie Title</string>
+    <string name="release_date">Release Date</string>
+    <string name="rating">Rating</string>
+    <string name="overview">Overview</string>
+
+    <string name="internet_connection_error">No Connection Available, Please Connect to the Internet.</string>
 
 </resources>

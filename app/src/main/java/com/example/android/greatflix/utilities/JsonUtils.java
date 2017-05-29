@@ -28,6 +28,7 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
         JSONObject posterPathJSONObject = movies.getJSONObject(i);
         String posterPath = posterPathJSONObject.getString("poster_path");
 
+
         Movies movieWithPath = new Movies(posterPath);
 
         moviesArrayList.add(movieWithPath);
@@ -35,4 +36,30 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
     }
     return moviesArrayList;
     }
+    public static List<Movies> getMoviesDetailsFromResponse(String urlResponse) throws JSONException {
+
+        List<Movies> moviesArrayList = new ArrayList<>();
+
+        JSONObject jsonObject = new JSONObject(urlResponse);
+
+        JSONArray movies = jsonObject.getJSONArray("results");
+
+        for (int i =0 ; i<movies.length(); i++){
+            JSONObject JSONObject = movies.getJSONObject(i);
+            String posterPath = JSONObject.getString("poster_path");
+            String titlePath = JSONObject.getString("original_title");
+            String releaseDatePath = JSONObject.getString("release_date");
+            String overviewPath = JSONObject.getString("overview");
+            String votePath = JSONObject.getString("vote_average");
+
+
+
+            Movies movieWithPath = new Movies(posterPath,titlePath,releaseDatePath,votePath,overviewPath);
+
+            moviesArrayList.add(movieWithPath);
+
+        }
+        return moviesArrayList;
+    }
+
 }
