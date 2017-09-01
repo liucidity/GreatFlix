@@ -28,7 +28,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
 
     public interface MovieAdapterOnClickHandler{
-        void onClick(String currentMovie, String titlePath, String releaseDatePath,String ratingPath, String overviewPath);
+        void onClick(String currentMovie, String titlePath, String idPath, String releaseDatePath,String ratingPath, String overviewPath);
     }
 
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler){
@@ -50,10 +50,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             int adapterPosition = getAdapterPosition();
             String imagePath = mMovieData.get(adapterPosition).getPosterPath();
             String titlePath = mMovieData.get(adapterPosition).getTitle();
+            String idPath = mMovieData.get(adapterPosition).getId();
             String releaseDatePath = mMovieData.get(adapterPosition).getReleaseDate();
             String ratingPath = mMovieData.get(adapterPosition).getRating();
             String overviewPath = mMovieData.get(adapterPosition).getOverview();
-            mClickHandler.onClick(imagePath,titlePath,releaseDatePath, ratingPath, overviewPath);
+            mClickHandler.onClick(imagePath,titlePath,idPath,releaseDatePath, ratingPath, overviewPath);
         }
     }
 

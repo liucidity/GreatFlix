@@ -11,6 +11,7 @@ public class Movies implements Cloneable{
     private String posterPath;
     private String releaseDate;
     private String title;
+    private String id;
     private String rating;
     private String overview;
 
@@ -18,10 +19,12 @@ public class Movies implements Cloneable{
 
 
 
-    public Movies(String posterPath, String title, String releaseDate, String rating, String overview) {
+    public Movies(String posterPath, String title, String id,String releaseDate, String rating, String overview) {
         this.posterPath = posterPath;
+        this.id = id;
         this.releaseDate = releaseDate;
         this.title = title;
+
         this.rating = rating;
         this.overview = overview;
     }
@@ -43,6 +46,9 @@ public class Movies implements Cloneable{
 
     public String getTitle() {
         return title;
+    }
+    public String getId(){
+        return id;
     }
 
     public String getReleaseDate() {

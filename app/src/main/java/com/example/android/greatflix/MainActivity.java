@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
-    public void onClick(String currentMoviePoster, String currentMovieTitle, String currentMovieReleaseDate, String currentMovieRatings, String currentMovieOverview) {
+    public void onClick(String currentMoviePoster, String currentMovieTitle, String currentMovieId, String currentMovieReleaseDate, String currentMovieRatings, String currentMovieOverview) {
         Context context = this;
 
 
@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Intent startDetailActivityIntent = new Intent(context, destinationClass);
         startDetailActivityIntent.putExtra("posterPath",currentMoviePoster);
         startDetailActivityIntent.putExtra("movieTitle", currentMovieTitle);
+        startDetailActivityIntent.putExtra("movieId",currentMovieId);
         startDetailActivityIntent.putExtra("movieReleaseDate", currentMovieReleaseDate);
         startDetailActivityIntent.putExtra("movieRating", currentMovieRatings);
         startDetailActivityIntent.putExtra("movieOverview", currentMovieOverview);

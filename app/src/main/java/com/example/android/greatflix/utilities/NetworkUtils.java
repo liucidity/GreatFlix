@@ -26,7 +26,7 @@ public final class NetworkUtils {
     private static final String API_PARAM = "api_key";
 
     //create your own api key for free at https://www.themoviedb.org
-    private static final String API_KEY = "";
+    private static final String API_KEY = "9fffce76b106323832408d9bae5a5e73";
     private static final String imageSize = "w185";
 
     //currently this buildUrl only works for popular movies todo: allow it to select between popular and top rate
@@ -46,6 +46,51 @@ public final class NetworkUtils {
             e.printStackTrace();
         }
         Log.v(TAG, "Built URI " + url);
+        return url;
+    }
+    public static URL buildDetailUrl(String id){
+        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendPath(String.valueOf(id))
+                .appendQueryParameter(API_PARAM,API_KEY)
+                .build();
+
+        URL url = null;
+        try{
+            url = new URL(builtUri.toString());
+        }catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+        Log.v(TAG, "Built URI for Detail " + url);
+        return url;
+    }
+    public static URL buildTrailerUrl(String id){
+        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendPath(String.valueOf(id))
+                .appendPath("videos")
+                .appendQueryParameter(API_PARAM,API_KEY)
+                .build();
+        URL url = null;
+        try{
+            url = new URL(builtUri.toString());
+        }catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+        Log.v(TAG, "Built URI for Trailer " + url);
+        return url;
+    }
+    public static URL buildReviewUrl(String id){
+        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendPath(String.valueOf(id))
+                .appendPath("reviews")
+                .appendQueryParameter(API_PARAM,API_KEY)
+                .build();
+        URL url= null;
+        try{
+            url = new URL(builtUri.toString());
+        }catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+        Log.v(TAG, "Built URI for Review " + url);
         return url;
     }
     public static URL buildMoviePosterPath(String posterPath){

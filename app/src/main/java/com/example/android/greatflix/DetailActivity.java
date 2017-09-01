@@ -5,22 +5,38 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.greatflix.objects.Movies;
+import com.example.android.greatflix.utilities.JsonUtils;
 import com.example.android.greatflix.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.android.greatflix.utilities.NetworkUtils.buildDetailUrl;
 
 public class DetailActivity extends AppCompatActivity {
 
     private String mPosterPath;
     private String mMovieTitle;
+    private String mMovieId;
+
     private String mReleaseDate;
     private String mReviewScore;
     private String mOverview;
 
+
     private TextView mMovieTitleTextView;
+
     private TextView mReleaseDateTextView;
     private TextView mOverviewTextView;
     private TextView mReviewTextView;
@@ -36,6 +52,7 @@ public class DetailActivity extends AppCompatActivity {
         mReleaseDateTextView = (TextView) findViewById(R.id.tv_release_date);
         mOverviewTextView = (TextView) findViewById(R.id.tv_overview);
         mReviewTextView = (TextView) findViewById(R.id.tv_ratings);
+
 
 
 
@@ -56,9 +73,20 @@ public class DetailActivity extends AppCompatActivity {
             }if (intentThatStartedTheActivity.hasExtra("movieTitle")){
                 mMovieTitle = intentThatStartedTheActivity.getStringExtra("movieTitle");
                 mMovieTitleTextView.setText(mMovieTitle);
-            }if (intentThatStartedTheActivity.hasExtra("movieReleaseDate")){
+            }
+            if (intentThatStartedTheActivity.hasExtra("movieId")){
+                mMovieId = intentThatStartedTheActivity.getStringExtra("movieId");
+                URL TrailerUrl = NetworkUtils.buildTrailerUrl(mMovieId);
+
+                Intent TrailerIntent = new Intent();
+
+                Uri uri = Uri.parse(NetworkUtils.buildReviewUrl(mMovieId).toString());
+                Log.d("detail", "onCreate: "+uri.toString());
+
+            }
+            if (intentThatStartedTheActivity.hasExtra("movieReleaseDate")){
                 mReleaseDate = intentThatStartedTheActivity.getStringExtra("movieReleaseDate");
-                mReleaseDateTextView.setText("Released:  " + mReleaseDate);
+                mReleaseDateTextView.setText(mReleaseDate);
             }if (intentThatStartedTheActivity.hasExtra("movieRating")){
                 mReviewScore = intentThatStartedTheActivity.getStringExtra("movieRating");
                 mReviewTextView.setText(mReviewScore);

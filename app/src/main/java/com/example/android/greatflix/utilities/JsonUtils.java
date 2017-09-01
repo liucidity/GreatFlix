@@ -6,8 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.R.attr.id;
 
 /**
  * Created by TRAVIS on 2017-05-19.
@@ -48,18 +51,20 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
             JSONObject JSONObject = movies.getJSONObject(i);
             String posterPath = JSONObject.getString("poster_path");
             String titlePath = JSONObject.getString("original_title");
+            String movieIdPath = JSONObject.getString("id");
             String releaseDatePath = JSONObject.getString("release_date");
             String overviewPath = JSONObject.getString("overview");
             String votePath = JSONObject.getString("vote_average");
 
 
-
-            Movies movieWithPath = new Movies(posterPath,titlePath,releaseDatePath,votePath,overviewPath);
+            Movies movieWithPath = new Movies(posterPath,titlePath,movieIdPath,releaseDatePath,votePath,overviewPath);
 
             moviesArrayList.add(movieWithPath);
 
         }
         return moviesArrayList;
     }
+
+
 
 }
