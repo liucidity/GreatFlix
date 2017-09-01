@@ -64,6 +64,16 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
         }
         return moviesArrayList;
     }
+    public static String getReviewContentFromResponse(String urlResponse)throws JSONException{
+        JSONObject jsonObject = new JSONObject(urlResponse);
+
+        JSONArray reviews = jsonObject.getJSONArray("results");
+        JSONObject JSONObject = reviews.getJSONObject(0);
+
+        String contentPath = JSONObject.getString("content");
+
+        return contentPath;
+    }
 
 
 

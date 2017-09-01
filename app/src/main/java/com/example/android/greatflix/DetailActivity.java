@@ -81,7 +81,13 @@ public class DetailActivity extends AppCompatActivity {
                 Intent TrailerIntent = new Intent();
 
                 Uri uri = Uri.parse(NetworkUtils.buildReviewUrl(mMovieId).toString());
-                Log.d("detail", "onCreate: "+uri.toString());
+                try {
+                    String content = JsonUtils.getReviewContentFromResponse(uri.toString());
+                    Log.d("detail", "onCreate: "+content);
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+
 
             }
             if (intentThatStartedTheActivity.hasExtra("movieReleaseDate")){
