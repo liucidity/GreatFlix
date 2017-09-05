@@ -3,6 +3,7 @@ package com.example.android.greatflix;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class DetailActivity extends AppCompatActivity {
     private String mPosterPath;
     private String mMovieTitle;
     private String mMovieId;
+    private String mMovieReview;
 
     private String mReleaseDate;
     private String mReviewScore;
@@ -36,6 +39,7 @@ public class DetailActivity extends AppCompatActivity {
 
 
     private TextView mMovieTitleTextView;
+    private TextView mMovieReviewTextView;
 
     private TextView mReleaseDateTextView;
     private TextView mOverviewTextView;
@@ -52,6 +56,7 @@ public class DetailActivity extends AppCompatActivity {
         mReleaseDateTextView = (TextView) findViewById(R.id.tv_release_date);
         mOverviewTextView = (TextView) findViewById(R.id.tv_overview);
         mReviewTextView = (TextView) findViewById(R.id.tv_ratings);
+        mMovieReviewTextView = (TextView) findViewById(R.id.tv_review);
 
 
 
@@ -80,15 +85,11 @@ public class DetailActivity extends AppCompatActivity {
 
                 Intent TrailerIntent = new Intent();
 
-                Uri uri = Uri.parse(NetworkUtils.buildReviewUrl(mMovieId).toString());
-                try {
-                    String content = JsonUtils.getReviewContentFromResponse(uri.toString());
-                    Log.d("detail", "onCreate: "+content);
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
+                URL ReviewUrl = NetworkUtils.buildReviewUrl(mMovieId);
 
-
+                new ReviewAsyncTask().execute(ReviewUrl);
+                mMovieReviewTextView.setText(mMovieReview);
+                Log.d("detail", "review " + mMovieReview);
             }
             if (intentThatStartedTheActivity.hasExtra("movieReleaseDate")){
                 mReleaseDate = intentThatStartedTheActivity.getStringExtra("movieReleaseDate");
@@ -101,6 +102,33 @@ public class DetailActivity extends AppCompatActivity {
                 mOverviewTextView.setText(mOverview);
             }
 
+
         }
+
+    }
+    private class ReviewAsyncTask extends AsyncTask<URL,Void,String>{
+        @Override
+        protected String doInBackground(URL... urls) {
+            URL ReviewUrl = makeMovieSearchQuery();
+            try {
+                String UrlResponse = NetworkUtils.getResponseFromHttpUrl(ReviewUrl);
+                mMovieReview = JsonUtils.getReviewContentFromResponse(UrlResponse);
+
+                Log.d("detail", "onCreate: " +mMovieReview);
+
+                return mMovieReview;
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+    private URL makeMovieSearchQuery(){
+        URL movieQueryUrl = NetworkUtils.buildReviewUrl(mMovieId);
+
+        return movieQueryUrl;
+
+
     }
 }
