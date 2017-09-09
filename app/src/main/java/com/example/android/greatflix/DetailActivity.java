@@ -1,5 +1,6 @@
 package com.example.android.greatflix;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -7,10 +8,16 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.greatflix.objects.Movies;
+import com.example.android.greatflix.objects.Reviews;
+import com.example.android.greatflix.objects.Trailer;
 import com.example.android.greatflix.utilities.JsonUtils;
 import com.example.android.greatflix.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -20,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +39,7 @@ public class DetailActivity extends AppCompatActivity {
     private String mPosterPath;
     private String mMovieTitle;
     private String mMovieId;
-    private String mMovieReview;
+    private Reviews mMovieReview;
 
     private String mReleaseDate;
     private String mReviewScore;
@@ -40,11 +48,13 @@ public class DetailActivity extends AppCompatActivity {
 
     private TextView mMovieTitleTextView;
     private TextView mMovieReviewTextView;
+    private TextView mMovieReviewAuthorTextView;
 
     private TextView mReleaseDateTextView;
     private TextView mOverviewTextView;
     private TextView mReviewTextView;
     private ImageView mImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +67,7 @@ public class DetailActivity extends AppCompatActivity {
         mOverviewTextView = (TextView) findViewById(R.id.tv_overview);
         mReviewTextView = (TextView) findViewById(R.id.tv_ratings);
         mMovieReviewTextView = (TextView) findViewById(R.id.tv_review);
-
+        mMovieReviewAuthorTextView = (TextView) findViewById(R.id.tv_review_author);
 
 
 
@@ -81,15 +91,18 @@ public class DetailActivity extends AppCompatActivity {
             }
             if (intentThatStartedTheActivity.hasExtra("movieId")){
                 mMovieId = intentThatStartedTheActivity.getStringExtra("movieId");
-                URL TrailerUrl = NetworkUtils.buildTrailerUrl(mMovieId);
-
-                Intent TrailerIntent = new Intent();
 
                 URL ReviewUrl = NetworkUtils.buildReviewUrl(mMovieId);
-
                 new ReviewAsyncTask().execute(ReviewUrl);
-                mMovieReviewTextView.setText(mMovieReview);
-                Log.d("detail", "review " + mMovieReview);
+
+                ImageButton button = (ImageButton) findViewById(R.id.iv_play_button);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        URL TrailerUrl = NetworkUtils.buildTrailerUrl(mMovieId);
+                        new TrailerAsyncTask().execute(TrailerUrl);
+                    }
+                });
             }
             if (intentThatStartedTheActivity.hasExtra("movieReleaseDate")){
                 mReleaseDate = intentThatStartedTheActivity.getStringExtra("movieReleaseDate");
@@ -106,9 +119,22 @@ public class DetailActivity extends AppCompatActivity {
         }
 
     }
-    private class ReviewAsyncTask extends AsyncTask<URL,Void,String>{
+    public void addToFavorites(View v){
+        ContentValues values = new ContentValues();
+
+        values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_NAME, mMovieTitle);
+
+        Uri uri = getContentResolver().insert(MovieFavoriteContract.FavoriteEntry.CONTENT_URI, values);
+
+        if (uri!=null){
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_SHORT).show();
+        }
+
+        finish();
+    }
+    private class ReviewAsyncTask extends AsyncTask<URL,Void,Reviews>{
         @Override
-        protected String doInBackground(URL... urls) {
+        protected Reviews doInBackground(URL... urls) {
             URL ReviewUrl = makeMovieSearchQuery();
             try {
                 String UrlResponse = NetworkUtils.getResponseFromHttpUrl(ReviewUrl);
@@ -123,12 +149,50 @@ public class DetailActivity extends AppCompatActivity {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Reviews movieReviewString) {
+            super.onPostExecute(movieReviewString);
+            if (movieReviewString!=null) {
+                mMovieReviewTextView.setText(movieReviewString.getContents());
+                mMovieReviewAuthorTextView.setText(movieReviewString.getAuthor());
+            }
+        }
+    }
+
+    private class TrailerAsyncTask extends AsyncTask<URL,Void,Trailer>{
+        @Override
+        protected Trailer doInBackground(URL... urls) {
+            URL trailerUrl = makeTrailerSearchQuery();
+            try {
+                String urlResponse = NetworkUtils.getResponseFromHttpUrl(trailerUrl);
+                Trailer trailer = JsonUtils.getTrailerContentFromResponse(urlResponse);
+                return trailer;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Trailer trailer) {
+            super.onPostExecute(trailer);
+
+                //TODO:find way to only play trailers or only play clips , possible trailer.getType();
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +trailer.getKey()));
+
+                startActivity(intent);
+
+
+        }
     }
     private URL makeMovieSearchQuery(){
         URL movieQueryUrl = NetworkUtils.buildReviewUrl(mMovieId);
 
         return movieQueryUrl;
 
-
+    }
+    private URL makeTrailerSearchQuery(){
+        URL movieTrailerQueryUrl = NetworkUtils.buildTrailerUrl(mMovieId);
+        return movieTrailerQueryUrl;
     }
 }

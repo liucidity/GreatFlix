@@ -1,6 +1,8 @@
 package com.example.android.greatflix.utilities;
 
 import com.example.android.greatflix.objects.Movies;
+import com.example.android.greatflix.objects.Reviews;
+import com.example.android.greatflix.objects.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +24,7 @@ public final class JsonUtils {
 public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSONException {
 
     List<Movies> moviesArrayList = new ArrayList<>();
+
 
     JSONObject jsonObject = new JSONObject(urlResponse);
 
@@ -64,15 +67,35 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
         }
         return moviesArrayList;
     }
-    public static String getReviewContentFromResponse(String urlResponse)throws JSONException{
+    public static Reviews getReviewContentFromResponse(String urlResponse)throws JSONException{
+
         JSONObject jsonObject = new JSONObject(urlResponse);
 
-        JSONArray reviews = jsonObject.getJSONArray("results");
-        JSONObject JSONObject = reviews.getJSONObject(0);
+        JSONArray reviewsResultsPath = jsonObject.getJSONArray("results");
+        JSONObject JSONObject = reviewsResultsPath.getJSONObject(0);
 
         String contentPath = JSONObject.getString("content");
+        String authorPath = JSONObject.getString("author");
+        Reviews reviews = new Reviews(authorPath,contentPath);
 
-        return contentPath;
+        return reviews;
+    }
+    public static Trailer getTrailerContentFromResponse(String urlResponse) throws JSONException{
+        JSONObject jsonObject = new JSONObject(urlResponse);
+        JSONArray trailers = jsonObject.getJSONArray("results");
+
+        for (int i =0 ; i<trailers.length(); i++){
+            JSONObject JSONObject = trailers.getJSONObject(i);
+
+            String trailerKeyPath = JSONObject.getString("key");
+            String trailerTypePath = JSONObject.getString("type");
+
+            Trailer trailer = new Trailer(trailerKeyPath,trailerTypePath);
+            return trailer;
+        }
+        //todo: figure out why this works
+        return null;
+
     }
 
 

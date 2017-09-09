@@ -96,6 +96,7 @@
         android:layout_marginTop="10dp"
         android:text="Mark As Favorite"
         android:textSize="10sp"
+        android:onClick="addToFavorites"
         app:layout_constraintLeft_toLeftOf="@+id/tv_ratings"
         app:layout_constraintTop_toBottomOf="@+id/tv_ratings" />
 </android.support.constraint.ConstraintLayout>

@@ -12,6 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Dark">
+        <provider
+            android:name=".MovieFavoriteProvider"
+            android:authorities="com.androidessence.moviedatabase"
+            android:exported="false"
+            android:protectionLevel="signature"
+            android:syncable="true"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
