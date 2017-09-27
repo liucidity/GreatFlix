@@ -44,9 +44,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-
         mInternetConnectivityTextView = (TextView) findViewById(R.id.tv_no_internet_connection);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_image_list);
         mMovieAdapter = new MovieAdapter(this);
@@ -165,6 +162,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if(id == R.id.action_choose_top_rated){
         CURRENT_QUERY = TOP_RATED_QUERY;
             loadMovieData();
+        }
+        if(id == R.id.action_go_to_favorites){
+            Intent FavoriteActivityIntent = new Intent(this,Favorites.class);
+            startActivity(FavoriteActivityIntent);
         }
 
         return super.onOptionsItemSelected(item);

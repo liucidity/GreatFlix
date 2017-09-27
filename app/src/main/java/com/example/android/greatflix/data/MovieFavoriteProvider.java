@@ -1,4 +1,4 @@
-package com.example.android.greatflix;
+package com.example.android.greatflix.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -7,7 +7,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.CancellationSignal;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -93,7 +92,7 @@ public class MovieFavoriteProvider extends ContentProvider {
             case MOVIE:
                 _id = db.insert(MovieFavoriteContract.FavoriteEntry.TABLE_NAME, null, contentValues);
                 if (_id > 0) {
-                    returnUri = MovieFavoriteContract.FavoriteEntry.buildFavoritesUri(_id);
+                    returnUri = ContentUris.withAppendedId(MovieFavoriteContract.FavoriteEntry.CONTENT_URI, _id);
                 } else {
                     throw new UnsupportedOperationException("unable to insert rows into " + uri);
                 }break;
@@ -113,6 +112,9 @@ public class MovieFavoriteProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)){
             case MOVIE:
                 rows = db.delete(MovieFavoriteContract.FavoriteEntry.TABLE_NAME,selection, selectionArgs);
+                break;
+            case MOVIE_ID:
+                rows = db.delete(MovieFavoriteContract.FavoriteEntry.TABLE_NAME,selection,selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

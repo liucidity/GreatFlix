@@ -3,8 +3,13 @@ package com.example.android.greatflix;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.UserDictionary;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,24 +20,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.greatflix.objects.Movies;
+import com.example.android.greatflix.data.MovieFavoriteContract;
+import com.example.android.greatflix.data.MovieFavoriteDbHelper;
+import com.example.android.greatflix.data.MovieFavoriteProvider;
 import com.example.android.greatflix.objects.Reviews;
 import com.example.android.greatflix.objects.Trailer;
 import com.example.android.greatflix.utilities.JsonUtils;
 import com.example.android.greatflix.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.example.android.greatflix.utilities.NetworkUtils.buildDetailUrl;
+import static com.example.android.greatflix.data.MovieFavoriteContract.FavoriteEntry.TABLE_NAME;
+import static java.security.AccessController.getContext;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -40,6 +40,8 @@ public class DetailActivity extends AppCompatActivity {
     private String mMovieTitle;
     private String mMovieId;
     private Reviews mMovieReview;
+    private MovieFavoriteDbHelper mDb;
+
 
     private String mReleaseDate;
     private String mReviewScore;
@@ -88,6 +90,7 @@ public class DetailActivity extends AppCompatActivity {
             }if (intentThatStartedTheActivity.hasExtra("movieTitle")){
                 mMovieTitle = intentThatStartedTheActivity.getStringExtra("movieTitle");
                 mMovieTitleTextView.setText(mMovieTitle);
+                Log.d("Details", "Movie Title" + mMovieTitle.toString());
             }
             if (intentThatStartedTheActivity.hasExtra("movieId")){
                 mMovieId = intentThatStartedTheActivity.getStringExtra("movieId");
@@ -113,24 +116,49 @@ public class DetailActivity extends AppCompatActivity {
             }if (intentThatStartedTheActivity.hasExtra("movieOverview")){
                 mOverview = intentThatStartedTheActivity.getStringExtra("movieOverview");
                 mOverviewTextView.setText(mOverview);
+            }if (intentThatStartedTheActivity.hasExtra("isAlreadyFavorite")){
+                Button button  = (Button) findViewById(R.id.btn_mark_as_favorite);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String where = "movie_id";
+                        String whereArgs[] = {String.valueOf(mMovieId)};
+                     getContentResolver().delete(MovieFavoriteContract.FavoriteEntry.CONTENT_URI, where, whereArgs);
+                    }
+
+                });
             }
 
 
         }
 
     }
-    public void addToFavorites(View v){
-        ContentValues values = new ContentValues();
 
-        values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_NAME, mMovieTitle);
+    public void addToFavorites(View v) throws SQLiteConstraintException{
 
-        Uri uri = getContentResolver().insert(MovieFavoriteContract.FavoriteEntry.CONTENT_URI, values);
+        try {
 
-        if (uri!=null){
-            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_SHORT).show();
+            ContentValues values = new ContentValues();
+
+            values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_NAME, mMovieTitle);
+            values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, mMovieId);
+            values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_RATING, mReviewScore);
+            values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_RELEASE, mReleaseDate);
+            values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_POSTER_ID, mPosterPath);
+            values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_OVERVIEW, mOverview);
+
+            Uri uri = getContentResolver().insert(MovieFavoriteContract.FavoriteEntry.CONTENT_URI, values);
+            Log.d("detail", "addToFavorites: " + uri);
+
+            if (uri != null) {
+                Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(this,"movie is already in your favorites",Toast.LENGTH_SHORT).show();
         }
 
-        finish();
     }
     private class ReviewAsyncTask extends AsyncTask<URL,Void,Reviews>{
         @Override
@@ -140,7 +168,6 @@ public class DetailActivity extends AppCompatActivity {
                 String UrlResponse = NetworkUtils.getResponseFromHttpUrl(ReviewUrl);
                 mMovieReview = JsonUtils.getReviewContentFromResponse(UrlResponse);
 
-                Log.d("detail", "onCreate: " +mMovieReview);
 
                 return mMovieReview;
 

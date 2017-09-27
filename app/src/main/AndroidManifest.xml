@@ -13,11 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Dark">
         <provider
-            android:name=".MovieFavoriteProvider"
-            android:authorities="com.androidessence.moviedatabase"
+            android:name=".data.MovieFavoriteProvider"
+            android:authorities="com.example.android.greatflix"
             android:exported="false"
             android:protectionLevel="signature"
-            android:syncable="true"/>
+            android:syncable="true" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailActivity"></activity>
+        <activity android:name=".DetailActivity" />
+        <activity android:name=".Favorites"></activity>
     </application>
 
 </manifest>

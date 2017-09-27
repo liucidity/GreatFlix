@@ -1,4 +1,4 @@
-package com.example.android.greatflix;
+package com.example.android.greatflix.data;
 
 import android.content.ContentUris;
 import android.net.Uri;
@@ -17,7 +17,6 @@ public class MovieFavoriteContract {
     public static final String PATH_FAVORITES = "favorites";
 
 
-
     public static final class FavoriteEntry implements BaseColumns{
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_FAVORITES)
@@ -27,18 +26,16 @@ public class MovieFavoriteContract {
         public static final String TABLE_NAME = "favorites";
 
 
-        public static final String COLUMN_ID = "movie_id";
+        public static final String COLUMN_MOVIE_ID = "movie_id";
         public static final String COLUMN_MOVIE_NAME = "movie_name";
         public static final String COLUMN_MOVIE_RELEASE = "movie_release";
         public static final String COLUMN_MOVIE_RATING = "movie_rating";
-
+        public static final String COLUMN_MOVIE_OVERVIEW = "movie_overview";
         public static final String COLUMN_POSTER_ID = "poster_id";
 
         public static Uri buildFavoritesUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
-
     }
 
 

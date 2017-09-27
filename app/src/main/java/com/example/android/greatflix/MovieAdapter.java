@@ -33,7 +33,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler){
         mClickHandler = clickHandler;
-
     }
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final ImageView mImageView;
