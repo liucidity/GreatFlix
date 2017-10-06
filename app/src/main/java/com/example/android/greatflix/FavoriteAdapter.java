@@ -87,4 +87,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
         notifyDataSetChanged();
 
     }
+    public void clear(){
+        mFavoritesData = null;
+        notifyDataSetChanged();
+    }
 }

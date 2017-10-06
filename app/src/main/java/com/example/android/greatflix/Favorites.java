@@ -41,13 +41,14 @@ public class Favorites extends AppCompatActivity implements FavoriteAdapter.Favo
 
     private static final String[] PROJECTION = {
             MovieFavoriteContract.FavoriteEntry._ID,
-            MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID,
             MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_NAME,
-            MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_RATING,
+            MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID,
             MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_RELEASE,
+            MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_RATING,
+            MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_OVERVIEW,
             MovieFavoriteContract.FavoriteEntry.COLUMN_POSTER_ID,
-            MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_OVERVIEW
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +56,17 @@ public class Favorites extends AppCompatActivity implements FavoriteAdapter.Favo
         setContentView(R.layout.activity_favorites);
 
         mAdapter = new FavoriteAdapter(this);
-        mRecyclerView= (RecyclerView) findViewById(R.id.rv_favorite_movies);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_favorite_movies);
         mRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(),3);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
+
+
         getSupportLoaderManager().initLoader(URL_LOADER,null,this);
     }
+
 
     @Override
     public void onClick(String currentMoviePoster, String currentMovieTitle, String currentMovieId, String currentMovieReleaseDate, String currentMovieRatings, String currentMovieOverview, boolean currentMovieFavoriteStatus) {
@@ -123,13 +127,14 @@ public class Favorites extends AppCompatActivity implements FavoriteAdapter.Favo
             String overview = data.getString(index);
 
 
-            Movies moviesWithPath = new Movies(movie_poster,movie_id,release_date,movie_title,rating,overview);
+            Movies moviesWithPath = new Movies(movie_poster,movie_title,movie_id,release_date,rating,overview);
             favoriteMoviesArrayList.add(moviesWithPath);
             Log.d("Favorites", "onLoadFinished: there are " + favoriteMoviesArrayList.size() + " favorite movies");
 
 
             if (favoriteMoviesArrayList != null) {
                 mAdapter.setFavoritesData(favoriteMoviesArrayList);
+
             }
             if (data != null) {
                 TextView noFavoritesTextView = (TextView) findViewById(R.id.tv_no_favorites_added_message);
@@ -142,7 +147,15 @@ public class Favorites extends AppCompatActivity implements FavoriteAdapter.Favo
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(Loader<Cursor> loader) { //doesnt seem to be called
+        mAdapter.clear();
+        Log.d("favo", "onLoaderReset: adapter cleared   ");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        getSupportLoaderManager().restartLoader(URL_LOADER,null,this);
 
     }
 }

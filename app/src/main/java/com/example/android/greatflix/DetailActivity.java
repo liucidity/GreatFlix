@@ -13,6 +13,7 @@ import android.provider.UserDictionary;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -31,6 +32,8 @@ import com.squareup.picasso.Picasso;
 
 import java.net.URL;
 
+import static android.R.attr.button;
+import static android.R.attr.start;
 import static com.example.android.greatflix.data.MovieFavoriteContract.FavoriteEntry.TABLE_NAME;
 import static java.security.AccessController.getContext;
 
@@ -41,11 +44,13 @@ public class DetailActivity extends AppCompatActivity {
     private String mMovieId;
     private Reviews mMovieReview;
     private MovieFavoriteDbHelper mDb;
+    private Intent goToFavoriteActivityIntent;
 
 
     private String mReleaseDate;
     private String mReviewScore;
     private String mOverview;
+
 
 
     private TextView mMovieTitleTextView;
@@ -70,10 +75,13 @@ public class DetailActivity extends AppCompatActivity {
         mReviewTextView = (TextView) findViewById(R.id.tv_ratings);
         mMovieReviewTextView = (TextView) findViewById(R.id.tv_review);
         mMovieReviewAuthorTextView = (TextView) findViewById(R.id.tv_review_author);
+        goToFavoriteActivityIntent = new Intent(this, Favorites.class);
 
 
 
-        Intent intentThatStartedTheActivity = getIntent();
+
+
+        final Intent intentThatStartedTheActivity = getIntent();
 
         if(intentThatStartedTheActivity!=null){
             if(intentThatStartedTheActivity.hasExtra("posterPath")){
@@ -118,12 +126,14 @@ public class DetailActivity extends AppCompatActivity {
                 mOverviewTextView.setText(mOverview);
             }if (intentThatStartedTheActivity.hasExtra("isAlreadyFavorite")){
                 Button button  = (Button) findViewById(R.id.btn_mark_as_favorite);
+                final Intent parentIntent = new Intent(this,Favorites.class);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String where = "movie_id";
-                        String whereArgs[] = {String.valueOf(mMovieId)};
+                        String where = "movie_id = ?";
+                        String whereArgs[] = {mMovieId};
                      getContentResolver().delete(MovieFavoriteContract.FavoriteEntry.CONTENT_URI, where, whereArgs);
+                        //startActivity(parentIntent);
                     }
 
                 });
@@ -221,5 +231,16 @@ public class DetailActivity extends AppCompatActivity {
     private URL makeTrailerSearchQuery(){
         URL movieTrailerQueryUrl = NetworkUtils.buildTrailerUrl(mMovieId);
         return movieTrailerQueryUrl;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                Intent changeActivity = new Intent(this,Favorites.class);
+                startActivity(changeActivity);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
