@@ -37,7 +37,7 @@ public class Favorites extends AppCompatActivity implements FavoriteAdapter.Favo
     private static final int URL_LOADER = 0;
     private FavoriteAdapter mAdapter;
     ImageView mImageView;
-    List<Movies> favoriteMoviesArrayList = new ArrayList<>();
+
 
     private static final String[] PROJECTION = {
             MovieFavoriteContract.FavoriteEntry._ID,
@@ -73,13 +73,13 @@ public class Favorites extends AppCompatActivity implements FavoriteAdapter.Favo
         Context context = this;
         Class destinationClass = DetailActivity.class;
         Intent startDetailActivityIntent = new Intent(context, destinationClass);
-        startDetailActivityIntent.putExtra("posterPath",currentMoviePoster);
-        startDetailActivityIntent.putExtra("movieTitle", currentMovieTitle);
-        startDetailActivityIntent.putExtra("movieId",currentMovieId);
-        startDetailActivityIntent.putExtra("movieReleaseDate", currentMovieReleaseDate);
-        startDetailActivityIntent.putExtra("movieRating", currentMovieRatings);
-        startDetailActivityIntent.putExtra("movieOverview", currentMovieOverview);
-        startDetailActivityIntent.putExtra("isAlreadyFavorite", currentMovieFavoriteStatus);
+        startDetailActivityIntent.putExtra(getString(R.string.poster_path_extra),currentMoviePoster);
+        startDetailActivityIntent.putExtra(getString(R.string.movie_title_extra), currentMovieTitle);
+        startDetailActivityIntent.putExtra(getString(R.string.movie_id_extra),currentMovieId);
+        startDetailActivityIntent.putExtra(getString(R.string.movie_release_date_extra), currentMovieReleaseDate);
+        startDetailActivityIntent.putExtra(getString(R.string.movie_rating_extra), currentMovieRatings);
+        startDetailActivityIntent.putExtra(getString(R.string.movie_overview_extra), currentMovieOverview);
+        startDetailActivityIntent.putExtra(getString(R.string.is_already_favorite_extra), currentMovieFavoriteStatus);
         startActivity(startDetailActivityIntent);
     }
 
@@ -105,7 +105,8 @@ public class Favorites extends AppCompatActivity implements FavoriteAdapter.Favo
     }
 //todo: set these to text / image views
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {//update UI
+        List<Movies> favoriteMoviesArrayList = new ArrayList<>();
         while(data.moveToNext()){
             int index;
             index = data.getColumnIndexOrThrow(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_NAME);
@@ -153,9 +154,12 @@ public class Favorites extends AppCompatActivity implements FavoriteAdapter.Favo
     }
 
     @Override
-    protected void onRestart() {
+    public void onRestart() {
         super.onRestart();
         getSupportLoaderManager().restartLoader(URL_LOADER,null,this);
+
+        Log.d("favo", "onRestart:  restarted   ");
+
 
     }
 }

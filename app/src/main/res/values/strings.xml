@@ -10,4 +10,15 @@
 
     <string name="internet_connection_error">No Connection Available, Please Connect to the Internet.</string>
 
+    <string name="poster_path_extra">posterPath</string>
+    <string name="movie_title_extra">movieTitle</string>
+    <string name="movie_id_extra">movieId</string>
+    <string name="movie_release_date_extra">movieReleaseDate</string>
+    <string name="movie_rating_extra">movieRating</string>
+    <string name="movie_overview_extra">movieOverview</string>
+    <string name="is_already_favorite_extra">isAlreadyFavorite</string>
+    <string name="remove_favorite_button_text">remove favorite</string>
+    <string name="toast_movie_already_favorite">movie is already in your favorites</string>
+    <string name="url_youtube_video_id">http://www.youtube.com/watch?v=</string>
+
 </resources>

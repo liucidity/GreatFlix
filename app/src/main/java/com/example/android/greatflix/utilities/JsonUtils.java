@@ -19,7 +19,7 @@ import static android.R.attr.id;
  */
 
 public final class JsonUtils {
-
+    public static final String RESULTS = "results";
 
 public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSONException {
 
@@ -28,7 +28,7 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
 
     JSONObject jsonObject = new JSONObject(urlResponse);
 
-    JSONArray movies = jsonObject.getJSONArray("results");
+    JSONArray movies = jsonObject.getJSONArray(RESULTS);
 
     for (int i =0 ; i<movies.length(); i++){
         JSONObject posterPathJSONObject = movies.getJSONObject(i);
@@ -48,7 +48,7 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
 
         JSONObject jsonObject = new JSONObject(urlResponse);
 
-        JSONArray movies = jsonObject.getJSONArray("results");
+        JSONArray movies = jsonObject.getJSONArray(RESULTS);
 
         for (int i =0 ; i<movies.length(); i++){
             JSONObject JSONObject = movies.getJSONObject(i);
@@ -71,7 +71,7 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
 
         JSONObject jsonObject = new JSONObject(urlResponse);
 
-        JSONArray reviewsResultsPath = jsonObject.getJSONArray("results");
+        JSONArray reviewsResultsPath = jsonObject.getJSONArray(RESULTS);
         JSONObject JSONObject = reviewsResultsPath.getJSONObject(0);
 
         String contentPath = JSONObject.getString("content");
@@ -82,7 +82,7 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
     }
     public static Trailer getTrailerContentFromResponse(String urlResponse) throws JSONException{
         JSONObject jsonObject = new JSONObject(urlResponse);
-        JSONArray trailers = jsonObject.getJSONArray("results");
+        JSONArray trailers = jsonObject.getJSONArray(RESULTS);
 
         for (int i =0 ; i<trailers.length(); i++){
             JSONObject JSONObject = trailers.getJSONObject(i);
@@ -93,7 +93,6 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
             Trailer trailer = new Trailer(trailerKeyPath,trailerTypePath);
             return trailer;
         }
-        //todo: figure out why this works
         return null;
 
     }

@@ -3,6 +3,7 @@ package com.example.android.greatflix.utilities;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.android.greatflix.BuildConfig;
 import com.example.android.greatflix.objects.Movies;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public final class NetworkUtils {
     private static final String API_PARAM = "api_key";
 
     //create your own api key for free at https://www.themoviedb.org
-    private static final String API_KEY = "9fffce76b106323832408d9bae5a5e73";
+    private static final String API_KEY = BuildConfig.API_KEY;
     private static final String imageSize = "w185";
 
     //currently this buildUrl only works for popular movies todo: allow it to select between popular and top rate

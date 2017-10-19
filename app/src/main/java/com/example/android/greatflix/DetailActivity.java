@@ -3,13 +3,9 @@ package com.example.android.greatflix;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.UserDictionary;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +19,6 @@ import android.widget.Toast;
 
 import com.example.android.greatflix.data.MovieFavoriteContract;
 import com.example.android.greatflix.data.MovieFavoriteDbHelper;
-import com.example.android.greatflix.data.MovieFavoriteProvider;
 import com.example.android.greatflix.objects.Reviews;
 import com.example.android.greatflix.objects.Trailer;
 import com.example.android.greatflix.utilities.JsonUtils;
@@ -31,11 +26,6 @@ import com.example.android.greatflix.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
-
-import static android.R.attr.button;
-import static android.R.attr.start;
-import static com.example.android.greatflix.data.MovieFavoriteContract.FavoriteEntry.TABLE_NAME;
-import static java.security.AccessController.getContext;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -84,8 +74,8 @@ public class DetailActivity extends AppCompatActivity {
         final Intent intentThatStartedTheActivity = getIntent();
 
         if(intentThatStartedTheActivity!=null){
-            if(intentThatStartedTheActivity.hasExtra("posterPath")){
-                mPosterPath = intentThatStartedTheActivity.getStringExtra("posterPath");
+            if(intentThatStartedTheActivity.hasExtra(getString(R.string.poster_path_extra))){
+                mPosterPath = intentThatStartedTheActivity.getStringExtra(getString(R.string.poster_path_extra));
 
 
                 String MoviePosterPath = mPosterPath;
@@ -95,13 +85,13 @@ public class DetailActivity extends AppCompatActivity {
                 Context context = ivBasicImage.getContext();
                 Picasso.with(context).load(uri).resize(342,514).centerInside().into(ivBasicImage);
 
-            }if (intentThatStartedTheActivity.hasExtra("movieTitle")){
-                mMovieTitle = intentThatStartedTheActivity.getStringExtra("movieTitle");
+            }if (intentThatStartedTheActivity.hasExtra(getString(R.string.movie_title_extra))){
+                mMovieTitle = intentThatStartedTheActivity.getStringExtra(getString(R.string.movie_title_extra));
                 mMovieTitleTextView.setText(mMovieTitle);
                 Log.d("Details", "Movie Title" + mMovieTitle.toString());
             }
-            if (intentThatStartedTheActivity.hasExtra("movieId")){
-                mMovieId = intentThatStartedTheActivity.getStringExtra("movieId");
+            if (intentThatStartedTheActivity.hasExtra(getString(R.string.movie_id_extra))){
+                mMovieId = intentThatStartedTheActivity.getStringExtra(getString(R.string.movie_id_extra));
 
                 URL ReviewUrl = NetworkUtils.buildReviewUrl(mMovieId);
                 new ReviewAsyncTask().execute(ReviewUrl);
@@ -115,17 +105,18 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 });
             }
-            if (intentThatStartedTheActivity.hasExtra("movieReleaseDate")){
-                mReleaseDate = intentThatStartedTheActivity.getStringExtra("movieReleaseDate");
+            if (intentThatStartedTheActivity.hasExtra(getString(R.string.movie_release_date_extra))){
+                mReleaseDate = intentThatStartedTheActivity.getStringExtra(getString(R.string.movie_release_date_extra));
                 mReleaseDateTextView.setText(mReleaseDate);
-            }if (intentThatStartedTheActivity.hasExtra("movieRating")){
-                mReviewScore = intentThatStartedTheActivity.getStringExtra("movieRating");
+            }if (intentThatStartedTheActivity.hasExtra(getString(R.string.movie_rating_extra))){
+                mReviewScore = intentThatStartedTheActivity.getStringExtra(getString(R.string.movie_rating_extra));
                 mReviewTextView.setText(mReviewScore);
-            }if (intentThatStartedTheActivity.hasExtra("movieOverview")){
-                mOverview = intentThatStartedTheActivity.getStringExtra("movieOverview");
+            }if (intentThatStartedTheActivity.hasExtra(getString(R.string.movie_overview_extra))){
+                mOverview = intentThatStartedTheActivity.getStringExtra(getString(R.string.movie_overview_extra));
                 mOverviewTextView.setText(mOverview);
-            }if (intentThatStartedTheActivity.hasExtra("isAlreadyFavorite")){
+            }if (intentThatStartedTheActivity.hasExtra(getString(R.string.is_already_favorite_extra))){
                 Button button  = (Button) findViewById(R.id.btn_mark_as_favorite);
+                button.setText(R.string.remove_favorite_button_text);
                 final Intent parentIntent = new Intent(this,Favorites.class);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -166,7 +157,7 @@ public class DetailActivity extends AppCompatActivity {
         }
         catch (Exception e){
             e.printStackTrace();
-            Toast.makeText(this,"movie is already in your favorites",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_movie_already_favorite,Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -215,7 +206,7 @@ public class DetailActivity extends AppCompatActivity {
             super.onPostExecute(trailer);
 
                 //TODO:find way to only play trailers or only play clips , possible trailer.getType();
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +trailer.getKey()));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_youtube_video_id) +trailer.getKey()));
 
                 startActivity(intent);
 
