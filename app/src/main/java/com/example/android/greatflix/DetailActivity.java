@@ -32,6 +32,8 @@ import java.net.URL;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+//will need to implement RecyclerView for Trailers and user reviews
+
 public class DetailActivity extends AppCompatActivity {
 
     private String mPosterPath;

@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
+    // dont understand this.
     @Override
     protected Parcelable onSaveInstanceState() {
         Bundle bundle = new Bundle();
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
         super.onRestoreInstanceState(state);
     }
+
 
 
     private void loadMovieData() {
