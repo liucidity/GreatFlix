@@ -25,7 +25,12 @@ import com.example.android.greatflix.utilities.JsonUtils;
 import com.example.android.greatflix.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 import java.net.URL;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -33,24 +38,31 @@ public class DetailActivity extends AppCompatActivity {
     private String mMovieTitle;
     private String mMovieId;
     private Reviews mMovieReview;
-    private MovieFavoriteDbHelper mDb;
-    private Intent goToFavoriteActivityIntent;
-
-
     private String mReleaseDate;
     private String mReviewScore;
     private String mOverview;
 
 
 
-    private TextView mMovieTitleTextView;
-    private TextView mMovieReviewTextView;
-    private TextView mMovieReviewAuthorTextView;
 
-    private TextView mReleaseDateTextView;
-    private TextView mOverviewTextView;
-    private TextView mReviewTextView;
-    private ImageView mImageView;
+    @BindView(R.id.tv_review)
+    TextView mMovieReviewTextView;
+    @BindView(R.id.tv_review_author)
+    TextView mMovieReviewAuthorTextView;
+    @BindView(R.id.tv_movie_title)
+    TextView mMovieTitleTextView;
+    @BindView(R.id.tv_release_date)
+    TextView mReleaseDateTextView;
+    @BindView(R.id.tv_overview)
+    TextView mOverviewTextView;
+    @BindView(R.id.tv_ratings)
+    TextView mRatingTextView;
+
+
+
+    @BindView(R.id.iv_detail)
+    ImageView mImageView;
+
 
 
     @Override
@@ -58,18 +70,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mImageView = (ImageView) findViewById(R.id.iv_detail);
-        mMovieTitleTextView = (TextView) findViewById(R.id.tv_movie_title);
-        mReleaseDateTextView = (TextView) findViewById(R.id.tv_release_date);
-        mOverviewTextView = (TextView) findViewById(R.id.tv_overview);
-        mReviewTextView = (TextView) findViewById(R.id.tv_ratings);
-        mMovieReviewTextView = (TextView) findViewById(R.id.tv_review);
-        mMovieReviewAuthorTextView = (TextView) findViewById(R.id.tv_review_author);
-        goToFavoriteActivityIntent = new Intent(this, Favorites.class);
-
-
-
-
+        ButterKnife.bind(this);
 
         final Intent intentThatStartedTheActivity = getIntent();
 
@@ -110,21 +111,20 @@ public class DetailActivity extends AppCompatActivity {
                 mReleaseDateTextView.setText(mReleaseDate);
             }if (intentThatStartedTheActivity.hasExtra(getString(R.string.movie_rating_extra))){
                 mReviewScore = intentThatStartedTheActivity.getStringExtra(getString(R.string.movie_rating_extra));
-                mReviewTextView.setText(mReviewScore);
+                mRatingTextView.setText(mReviewScore);
             }if (intentThatStartedTheActivity.hasExtra(getString(R.string.movie_overview_extra))){
                 mOverview = intentThatStartedTheActivity.getStringExtra(getString(R.string.movie_overview_extra));
                 mOverviewTextView.setText(mOverview);
             }if (intentThatStartedTheActivity.hasExtra(getString(R.string.is_already_favorite_extra))){
                 Button button  = (Button) findViewById(R.id.btn_mark_as_favorite);
                 button.setText(R.string.remove_favorite_button_text);
-                final Intent parentIntent = new Intent(this,Favorites.class);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         String where = "movie_id = ?";
                         String whereArgs[] = {mMovieId};
                      getContentResolver().delete(MovieFavoriteContract.FavoriteEntry.CONTENT_URI, where, whereArgs);
-                        //startActivity(parentIntent);
+
                     }
 
                 });

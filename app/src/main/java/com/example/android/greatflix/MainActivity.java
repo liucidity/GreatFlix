@@ -5,9 +5,13 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +40,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private MovieAdapter mMovieAdapter;
     private ProgressBar mProgressBar;
     private TextView mInternetConnectivityTextView;
+    public int mScrollPosition;
+
+    private static final String SAVED_LAYOUT_MANAGER = "savedlayoutmanagerkey";
+
 
     private static final String POPULAR_QUERY =  "popular";
     private static final String TOP_RATED_QUERY = "top_rated";
@@ -56,7 +64,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         CURRENT_QUERY = POPULAR_QUERY;
 
        loadMovieData();
+
     }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(SAVED_LAYOUT_MANAGER, mRecyclerView.getLayoutManager().onSaveInstanceState());
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            RecyclerView layoutManagerSavedState = ((Bundle) state).getParcelable(SAVED_LAYOUT_MANAGER);
+        }
+        super.onRestoreInstanceState(state);
+    }
+
 
     private void loadMovieData() {
 
@@ -101,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
-    public class MovieQueryTask extends AsyncTask<URL,Void, List<Movies>>{
+    private class MovieQueryTask extends AsyncTask<URL,Void, List<Movies>>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

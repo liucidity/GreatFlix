@@ -19,7 +19,7 @@ import static android.R.attr.id;
  */
 
 public final class JsonUtils {
-    public static final String RESULTS = "results";
+    private static final String RESULTS = "results";
 
 public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSONException {
 
