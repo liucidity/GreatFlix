@@ -8,33 +8,35 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.greatflix.data.MovieFavoriteContract;
-import com.example.android.greatflix.data.MovieFavoriteDbHelper;
 import com.example.android.greatflix.objects.Reviews;
 import com.example.android.greatflix.objects.Trailer;
 import com.example.android.greatflix.utilities.JsonUtils;
 import com.example.android.greatflix.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.net.URL;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 //will need to implement RecyclerView for Trailers and user reviews
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler{
 
     private String mPosterPath;
     private String mMovieTitle;
@@ -44,12 +46,6 @@ public class DetailActivity extends AppCompatActivity {
     private String mReviewScore;
     private String mOverview;
 
-
-
-
-    @BindView(R.id.tv_review)
-    TextView mMovieReviewTextView;
-    @BindView(R.id.tv_review_author)
     TextView mMovieReviewAuthorTextView;
     @BindView(R.id.tv_movie_title)
     TextView mMovieTitleTextView;
@@ -65,12 +61,37 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.iv_detail)
     ImageView mImageView;
 
+    RecyclerView trailerRecyclerView;
+    RecyclerView reviewRecyclerView;
+    //todo create trailer adapter to populate views and handle data.
+
+    private TrailerAdapter mTrailerAdapter;
+    private ReviewAdapter mReviewAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        //create TrailerAdapter, and LayoutManager
+        mTrailerAdapter = new TrailerAdapter(this, DetailActivity.this);
+        trailerRecyclerView = (RecyclerView) findViewById(R.id.trailer_recycler_view);
+
+        LinearLayoutManager trailerLayoutManager = new LinearLayoutManager(DetailActivity.this,LinearLayoutManager.HORIZONTAL,false);
+        trailerRecyclerView.setLayoutManager(trailerLayoutManager);
+        trailerRecyclerView.setAdapter(mTrailerAdapter);
+
+
+        mReviewAdapter = new ReviewAdapter();
+        reviewRecyclerView = (RecyclerView) findViewById(R.id.review_recycler_view);
+
+        LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(DetailActivity.this,LinearLayoutManager.VERTICAL,false);
+        reviewRecyclerView.setLayoutManager(reviewLayoutManager);
+        reviewRecyclerView.setAdapter(mReviewAdapter);
+
+        SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(trailerRecyclerView);
+
 
         ButterKnife.bind(this);
 
@@ -99,14 +120,11 @@ public class DetailActivity extends AppCompatActivity {
                 URL ReviewUrl = NetworkUtils.buildReviewUrl(mMovieId);
                 new ReviewAsyncTask().execute(ReviewUrl);
 
-                ImageButton button = (ImageButton) findViewById(R.id.iv_play_button);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        URL TrailerUrl = NetworkUtils.buildTrailerUrl(mMovieId);
-                        new TrailerAsyncTask().execute(TrailerUrl);
-                    }
-                });
+                URL TrailerUrl = NetworkUtils.buildTrailerUrl(mMovieId);
+                new TrailerAsyncTask().execute(TrailerUrl);
+
+
+
             }
             if (intentThatStartedTheActivity.hasExtra(getString(R.string.movie_release_date_extra))){
                 mReleaseDate = intentThatStartedTheActivity.getStringExtra(getString(R.string.movie_release_date_extra));
@@ -137,10 +155,30 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onClick(String trailerKey) {
+        URL TrailerUrl = NetworkUtils.buildTrailerUrl(mMovieId);
+        new TrailerAsyncTask().execute(TrailerUrl);
+
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("poster",mPosterPath);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mPosterPath = savedInstanceState.getString("poster");
+        Log.d("DetailAct", "onRestoreInstanceState: mPosterPath Restored" +mPosterPath);
+    }
+
     public void addToFavorites(View v) throws SQLiteConstraintException{
 
         try {
-
             ContentValues values = new ContentValues();
 
             values.put(MovieFavoriteContract.FavoriteEntry.COLUMN_MOVIE_NAME, mMovieTitle);
@@ -163,16 +201,14 @@ public class DetailActivity extends AppCompatActivity {
         }
 
     }
-    private class ReviewAsyncTask extends AsyncTask<URL,Void,Reviews>{
+    private class ReviewAsyncTask extends AsyncTask<URL,Void,List<Reviews>>{
         @Override
-        protected Reviews doInBackground(URL... urls) {
+        protected List<Reviews> doInBackground(URL... urls) {
             URL ReviewUrl = makeMovieSearchQuery();
             try {
                 String UrlResponse = NetworkUtils.getResponseFromHttpUrl(ReviewUrl);
-                mMovieReview = JsonUtils.getReviewContentFromResponse(UrlResponse);
-
-
-                return mMovieReview;
+                List<Reviews> reviews = JsonUtils.getReviewContentFromResponse(UrlResponse);
+                return reviews;
 
             }catch (Exception e){
                 e.printStackTrace();
@@ -181,22 +217,21 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Reviews movieReviewString) {
-            super.onPostExecute(movieReviewString);
-            if (movieReviewString!=null) {
-                mMovieReviewTextView.setText(movieReviewString.getContents());
-                mMovieReviewAuthorTextView.setText(movieReviewString.getAuthor());
+        protected void onPostExecute(List<Reviews> reviews) {
+            super.onPostExecute(reviews);
+            if (reviews!=null) {
+                mReviewAdapter.setReviewData(reviews);
             }
         }
     }
 
-    private class TrailerAsyncTask extends AsyncTask<URL,Void,Trailer>{
+    private class TrailerAsyncTask extends AsyncTask<URL,Void,List<Trailer>>{
         @Override
-        protected Trailer doInBackground(URL... urls) {
+        protected List<Trailer> doInBackground(URL... urls) {
             URL trailerUrl = makeTrailerSearchQuery();
             try {
                 String urlResponse = NetworkUtils.getResponseFromHttpUrl(trailerUrl);
-                Trailer trailer = JsonUtils.getTrailerContentFromResponse(urlResponse);
+                List<Trailer> trailer = JsonUtils.getTrailerContentFromResponse(urlResponse);
                 return trailer;
             }catch (Exception e){
                 e.printStackTrace();
@@ -204,15 +239,10 @@ public class DetailActivity extends AppCompatActivity {
             return null;
         }
         @Override
-        protected void onPostExecute(Trailer trailer) {
+        protected void onPostExecute(List<Trailer> trailer) {
             super.onPostExecute(trailer);
 
-                //TODO:find way to only play trailers or only play clips , possible trailer.getType();
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_youtube_video_id) +trailer.getKey()));
-
-                startActivity(intent);
-
-
+                mTrailerAdapter.setTrailerData(trailer);
         }
     }
     private URL makeMovieSearchQuery(){

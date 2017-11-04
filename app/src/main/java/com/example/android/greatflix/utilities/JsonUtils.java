@@ -67,20 +67,26 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
         }
         return moviesArrayList;
     }
-    public static Reviews getReviewContentFromResponse(String urlResponse)throws JSONException{
+    public static List<Reviews> getReviewContentFromResponse(String urlResponse)throws JSONException{
 
         JSONObject jsonObject = new JSONObject(urlResponse);
 
         JSONArray reviewsResultsPath = jsonObject.getJSONArray(RESULTS);
-        JSONObject JSONObject = reviewsResultsPath.getJSONObject(0);
 
-        String contentPath = JSONObject.getString("content");
-        String authorPath = JSONObject.getString("author");
-        Reviews reviews = new Reviews(authorPath,contentPath);
+        List<Reviews> reviewArrayList = new ArrayList<>();
+        for (int i = 0; i <reviewsResultsPath.length(); i++){
+            JSONObject JSONObject = reviewsResultsPath.getJSONObject(i);
+            String contentPath = JSONObject.getString("content");
+            String authorPath = JSONObject.getString("author");
+            Reviews review = new Reviews(authorPath, contentPath);
 
-        return reviews;
+            reviewArrayList.add(review);
+        }
+
+        return reviewArrayList;
     }
-    public static Trailer getTrailerContentFromResponse(String urlResponse) throws JSONException{
+    public static List<Trailer> getTrailerContentFromResponse(String urlResponse) throws JSONException{
+        List<Trailer> trailerArrayList = new ArrayList<>();
         JSONObject jsonObject = new JSONObject(urlResponse);
         JSONArray trailers = jsonObject.getJSONArray(RESULTS);
 
@@ -91,9 +97,9 @@ public static List<Movies> getMoviesFromResponse(String urlResponse) throws JSON
             String trailerTypePath = JSONObject.getString("type");
 
             Trailer trailer = new Trailer(trailerKeyPath,trailerTypePath);
-            return trailer;
+            trailerArrayList.add(trailer);
         }
-        return null;
+        return trailerArrayList;
 
     }
 

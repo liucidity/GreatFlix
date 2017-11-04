@@ -73,7 +73,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         String MoviePosterPath = mMovieData.get(position).getPosterPath();
         Log.d(TAG, "onBindViewHolder: "+MoviePosterPath);
-        //todo: prob broken
         Uri uri = Uri.parse(NetworkUtils.buildMoviePosterPath(MoviePosterPath).toString());
         ImageView ivBasicImage = holder.mImageView;
         Context context = ivBasicImage.getContext();

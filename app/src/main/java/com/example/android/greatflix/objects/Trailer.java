@@ -24,4 +24,5 @@ public class Trailer {
     public String getType() {
         return type;
     }
+
 }

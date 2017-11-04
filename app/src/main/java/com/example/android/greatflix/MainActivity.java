@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private MovieAdapter mMovieAdapter;
     private ProgressBar mProgressBar;
     private TextView mInternetConnectivityTextView;
-    public int mScrollPosition;
+    private Parcelable layoutManagerSavedState;
 
     private static final String SAVED_LAYOUT_MANAGER = "savedlayoutmanagerkey";
 
@@ -67,23 +67,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
-    // dont understand this.
     @Override
-    protected Parcelable onSaveInstanceState() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(SAVED_LAYOUT_MANAGER, mRecyclerView.getLayoutManager().onSaveInstanceState());
-        return bundle;
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(SAVED_LAYOUT_MANAGER, mRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof Bundle) {
-            RecyclerView layoutManagerSavedState = ((Bundle) state).getParcelable(SAVED_LAYOUT_MANAGER);
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState instanceof Bundle){
+            layoutManagerSavedState = savedInstanceState.getParcelable(SAVED_LAYOUT_MANAGER);
         }
-        super.onRestoreInstanceState(state);
+
+        super.onRestoreInstanceState(savedInstanceState);
+
     }
-
-
 
     private void loadMovieData() {
 
@@ -166,7 +164,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             if(s!=null) {
 
                 mMovieAdapter.setMovieData(s);
+                restoreLayoutManagerPosition();
+
+
+
             }
+
+
+        }
+
+
+    }
+    private void restoreLayoutManagerPosition() {
+        if (layoutManagerSavedState != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(layoutManagerSavedState);
         }
     }
     @Override
