@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     >
 
 
@@ -21,13 +21,14 @@
 
     <TextView
         android:id="@+id/tv_review_holder"
-        android:layout_width="293dp"
-        android:layout_height="wrap_content"
+        android:layout_width="309dp"
+        android:layout_height="431dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_author_holder"
-        tools:text="hmmmmm" />
+        tools:text="hmmmmm"
+        app:layout_constraintHorizontal_bias="0.506" />
 </android.support.constraint.ConstraintLayout>

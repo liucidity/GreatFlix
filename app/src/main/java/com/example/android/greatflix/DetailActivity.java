@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,6 +47,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private String mReviewScore;
     private String mOverview;
 
+    private Parcelable TrailerLayoutManagerSavedState;
+    private Parcelable ReviewLayoutManagerSavedState;
+
     TextView mMovieReviewAuthorTextView;
     @BindView(R.id.tv_movie_title)
     TextView mMovieTitleTextView;
@@ -68,6 +72,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
 
+    private static final String SAVED_TRAILER_STATE = "trailerstate";
+    private static final String SAVED_REVIEW_STATE = "reviewstate";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +92,15 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mReviewAdapter = new ReviewAdapter();
         reviewRecyclerView = (RecyclerView) findViewById(R.id.review_recycler_view);
 
+        LinearLayoutManager reviewLayoutManger2 = new LinearLayoutManager(getApplicationContext()){
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+
         LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(DetailActivity.this,LinearLayoutManager.VERTICAL,false);
+        reviewLayoutManager.setAutoMeasureEnabled(true);
         reviewRecyclerView.setLayoutManager(reviewLayoutManager);
         reviewRecyclerView.setAdapter(mReviewAdapter);
 
@@ -155,6 +170,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     }
 
+
+
     @Override
     public void onClick(String trailerKey) {
         URL TrailerUrl = NetworkUtils.buildTrailerUrl(mMovieId);
@@ -167,13 +184,20 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("poster",mPosterPath);
+        outState.putParcelable(SAVED_TRAILER_STATE, trailerRecyclerView.getLayoutManager().onSaveInstanceState());
+        outState.putParcelable(SAVED_REVIEW_STATE, reviewRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        mPosterPath = savedInstanceState.getString("poster");
-        Log.d("DetailAct", "onRestoreInstanceState: mPosterPath Restored" +mPosterPath);
+        if(savedInstanceState instanceof Bundle){
+            TrailerLayoutManagerSavedState = savedInstanceState.getParcelable(SAVED_TRAILER_STATE);
+            ReviewLayoutManagerSavedState = savedInstanceState.getParcelable(SAVED_REVIEW_STATE);
+            mPosterPath = savedInstanceState.getString("poster");
+            Log.d("DetailAct", "onRestoreInstanceState: mPosterPath Restored" +mPosterPath);
+        }
+
     }
 
     public void addToFavorites(View v) throws SQLiteConstraintException{
@@ -221,7 +245,18 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             super.onPostExecute(reviews);
             if (reviews!=null) {
                 mReviewAdapter.setReviewData(reviews);
+                restoreReviewLayoutManagerPosition();
             }
+        }
+    }
+    private void restoreReviewLayoutManagerPosition() {
+        if (ReviewLayoutManagerSavedState != null) {
+            reviewRecyclerView.getLayoutManager().onRestoreInstanceState(ReviewLayoutManagerSavedState);
+        }
+    }
+    private void restoreTrailerLayoutManagerPosition() {
+        if (TrailerLayoutManagerSavedState != null) {
+            trailerRecyclerView.getLayoutManager().onRestoreInstanceState(TrailerLayoutManagerSavedState);
         }
     }
 
@@ -241,8 +276,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         @Override
         protected void onPostExecute(List<Trailer> trailer) {
             super.onPostExecute(trailer);
-
+            
+            if (trailer!=null) {
                 mTrailerAdapter.setTrailerData(trailer);
+                restoreTrailerLayoutManagerPosition();
+            }
         }
     }
     private URL makeMovieSearchQuery(){
