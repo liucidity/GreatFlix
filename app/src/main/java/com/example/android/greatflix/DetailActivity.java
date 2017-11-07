@@ -92,12 +92,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mReviewAdapter = new ReviewAdapter();
         reviewRecyclerView = (RecyclerView) findViewById(R.id.review_recycler_view);
 
-        LinearLayoutManager reviewLayoutManger2 = new LinearLayoutManager(getApplicationContext()){
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
 
         LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(DetailActivity.this,LinearLayoutManager.VERTICAL,false);
         reviewLayoutManager.setAutoMeasureEnabled(true);
@@ -276,7 +270,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         @Override
         protected void onPostExecute(List<Trailer> trailer) {
             super.onPostExecute(trailer);
-            
+
             if (trailer!=null) {
                 mTrailerAdapter.setTrailerData(trailer);
                 restoreTrailerLayoutManagerPosition();
